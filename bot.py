@@ -50,7 +50,7 @@ def init_db():
     conn.close()
 
 async def store_in_channel(context: ContextTypes.DEFAULT_TYPE, data: dict, chat_id: str):
-    for attempt in range(3):
+    for attempt in range(5):
         try:
             message = await context.bot.send_message(
                 chat_id=chat_id,
@@ -291,7 +291,7 @@ async def main_async():
     flask_thread.daemon = True
     flask_thread.start()
     
-    for attempt in range(3):
+    for attempt in range(5):
         try:
             await app.initialize()
             await app.run_polling()

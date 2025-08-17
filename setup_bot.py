@@ -26,7 +26,7 @@ async def store_file_in_channel(bot, chat_id, file_content, file_name):
     
     for i, chunk in enumerate(chunks):
         data = {"action": f"store_file_{file_name}", "chunk_id": f"{unique_id}_{i}", "chunk": chunk}
-        for attempt in range(3):
+        for attempt in range(5):
             try:
                 message = await bot.send_message(
                     chat_id=chat_id,

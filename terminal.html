@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ترمینال لینوکسی</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #1e1e1e; color: #ffffff; padding: 20px; }
+        #terminal { background-color: #000000; padding: 10px; height: 400px; overflow-y: auto; }
+        #input { width: 100%; padding: 5px; margin-top: 10px; background-color: #333; color: #fff; border: none; }
+        .output { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h2>ترمینال لینوکسی</h2>
+    <div id="terminal"></div>
+    <input id="input" type="text" placeholder="دستور را وارد کنید (مثل ls، pwd)">
+    <script>
+        const baseUrl = window.Telegram?.WebApp?.initDataUnsafe?.start_param || window.location.origin;
+        async function sendCommand() {
+            const input = document.getElementById('input').value;
+            const terminal = document.getElementById('terminal');
+            if (input) {
+                terminal.innerHTML += `<div class="output">> ${input}</div>`;
+                try {
+                    const response = await fetch(`${baseUrl}/run_command`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ command: input })
+                    });
+                    const data = await response.json();
+                    if (data.error) {
+                        terminal.innerHTML += `<div class="output">خطا: ${data.error}</div>`;
+                    } else {
+                        terminal.innerHTML += `<div class="output">${data.output}</div>`;
+                    }
+                } catch (error) {
+                    terminal.innerHTML += `<div class="output">خطا: ${error.message}</div>`;
+                }
+                document.getElementById('input').value = '';
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        }
+        document.getElementById('input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { sendCommand(); }
+        });
+        if (window.Telegram?.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+    </script>
+</body>
+</html>
